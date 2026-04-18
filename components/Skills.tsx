@@ -1,162 +1,146 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { motion } from "framer-motion";
+import { useState } from "react";
 
-const skillCategories = [
+const categories = [
   {
-    title: "Programming",
+    name: "Languages",
     icon: "💻",
     skills: [
-      { name: "Java", level: 85 },
-      { name: "Python", level: 80 },
-      { name: "SQL", level: 75 },
-      { name: "C", level: 70 },
+      { name: "Python", tip: "Primary language for ML projects and scripting" },
+      { name: "Java", tip: "DSA + OOP coursework" },
+      { name: "C", tip: "Systems programming fundamentals" },
+      { name: "SQL", tip: "Database queries and management" },
     ],
-    gradient: "from-purple-500 to-blue-500",
-    glow: "group-hover:shadow-[0_0_30px_rgba(124,58,237,0.15)]",
-    border: "hover:border-purple-500/25",
   },
   {
-    title: "Core CS",
+    name: "CS Fundamentals",
     icon: "🧠",
     skills: [
-      { name: "DSA", level: 85 },
-      { name: "OOP", level: 90 },
-      { name: "DBMS", level: 80 },
-      { name: "OS", level: 75 },
-      { name: "CN", level: 70 },
+      { name: "DSA", tip: "Active problem-solving on LeetCode & HackerRank" },
+      { name: "OOP", tip: "Design patterns, SOLID principles" },
+      { name: "DBMS", tip: "Normalization, ER models, SQL optimization" },
+      { name: "OS", tip: "Process scheduling, memory management" },
+      { name: "CN", tip: "OSI/TCP-IP, socket programming basics" },
     ],
-    gradient: "from-blue-500 to-cyan-500",
-    glow: "group-hover:shadow-[0_0_30px_rgba(59,130,246,0.15)]",
-    border: "hover:border-blue-500/25",
   },
   {
-    title: "Full Stack",
+    name: "Web",
     icon: "🌐",
     skills: [
-      { name: "HTML/CSS", level: 90 },
-      { name: "React", level: 75 },
-      { name: "Next.js", level: 70 },
-      { name: "MySQL", level: 75 },
-      { name: "Figma", level: 80 },
+      { name: "HTML/CSS", tip: "Responsive layouts, Flexbox, Grid" },
+      { name: "JavaScript", tip: "ES6+, DOM manipulation, async patterns" },
+      { name: "React", tip: "Learning — used in Blockchain Jury System" },
+      { name: "Next.js", tip: "Used to build this portfolio" },
+      { name: "Tailwind CSS", tip: "Utility-first CSS framework" },
     ],
-    gradient: "from-cyan-500 to-emerald-500",
-    glow: "group-hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]",
-    border: "hover:border-cyan-500/25",
   },
   {
-    title: "AI / ML",
+    name: "AI / ML (Exposure)",
     icon: "🤖",
     skills: [
-      { name: "Prompt Engineering", level: 85 },
-      { name: "Scikit-learn", level: 70 },
-      { name: "Data Analysis", level: 75 },
-      { name: "Google Colab", level: 80 },
+      { name: "Scikit-learn", tip: "Used for Diabetes Prediction project" },
+      { name: "Pandas", tip: "Data cleaning & transformation" },
+      { name: "NumPy", tip: "Numerical computing basics" },
+      { name: "Google Colab", tip: "Primary ML experimentation environment" },
+      { name: "Prompt Engineering", tip: "Designing effective LLM prompts" },
     ],
-    gradient: "from-pink-500 to-purple-500",
-    glow: "group-hover:shadow-[0_0_30px_rgba(236,72,153,0.15)]",
-    border: "hover:border-pink-500/25",
   },
   {
-    title: "Tools",
+    name: "Tools & Platforms",
     icon: "🔧",
     skills: [
-      { name: "Git/GitHub", level: 90 },
-      { name: "MATLAB", level: 65 },
-      { name: "Illustrator", level: 75 },
-      { name: "Canva", level: 85 },
-      { name: "Inkscape", level: 70 },
+      { name: "Git/GitHub", tip: "Version control, branching, PRs" },
+      { name: "Figma", tip: "UI/UX prototyping and wireframing" },
+      { name: "MATLAB", tip: "Academic coursework" },
+      { name: "Illustrator", tip: "Graphics design for tech societies" },
+      { name: "Canva", tip: "Quick event posters and marketing" },
     ],
-    gradient: "from-amber-500 to-orange-500",
-    glow: "group-hover:shadow-[0_0_30px_rgba(245,158,11,0.15)]",
-    border: "hover:border-amber-500/25",
   },
   {
-    title: "Soft Skills",
-    icon: "🎯",
+    name: "Cloud (Certified)",
+    icon: "☁️",
     skills: [
-      { name: "Leadership", level: 95 },
-      { name: "Problem-Solving", level: 90 },
-      { name: "Communication", level: 85 },
-      { name: "Teamwork", level: 90 },
-      { name: "Time Mgmt", level: 80 },
+      { name: "AWS", tip: "AWS Cloud Foundations certified — EC2, S3, IAM" },
+      { name: "GCP", tip: "Google Arcade Facilitator — 3x" },
     ],
-    gradient: "from-emerald-500 to-teal-500",
-    glow: "group-hover:shadow-[0_0_30px_rgba(16,185,129,0.15)]",
-    border: "hover:border-emerald-500/25",
   },
 ];
 
-function SkillBar({ name, level, gradient, delay }: { name: string; level: number; gradient: string; delay: number }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-30px" });
-
-  return (
-    <div ref={ref} className="space-y-1.5">
-      <div className="flex justify-between items-center">
-        <span className="text-sm text-gray-300 font-medium">{name}</span>
-        <span className="text-xs text-gray-500 font-mono">{level}%</span>
-      </div>
-      <div className="h-1.5 bg-white/[0.04] rounded-full overflow-hidden">
-        <motion.div
-          className={`h-full rounded-full bg-gradient-to-r ${gradient}`}
-          initial={{ width: 0 }}
-          animate={isInView ? { width: `${level}%` } : { width: 0 }}
-          transition={{ duration: 1.2, delay: delay, ease: "easeOut" }}
-        />
-      </div>
-    </div>
-  );
-}
-
 export default function Skills() {
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const displayed = activeCategory ? categories.filter((c) => c.name === activeCategory) : categories;
+
   return (
     <section id="skills" className="py-32 px-6 relative max-w-7xl mx-auto section-glow">
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.8 }}
-      >
-        <h2 className="text-4xl md:text-5xl font-black mb-4 flex items-center gap-4">
-          <span className="text-purple-400/80 font-mono text-2xl font-normal">03.</span>
-          Arsenal
+      <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.7 }}>
+        <h2 className="font-display text-4xl md:text-5xl font-extrabold mb-3 flex items-center gap-4">
+          <span className="text-purple-400/70 font-mono text-xl font-normal">03.</span>
+          Skills
         </h2>
-        <p className="text-gray-500 text-lg mb-14 max-w-2xl">
-          Technologies and skills I wield to build impactful solutions.
+        <p className="text-gray-500 text-base mb-8 max-w-lg">
+          Honest list. Hover any skill for context.
         </p>
 
+        {/* Category filter */}
+        <div className="flex flex-wrap gap-2 mb-10">
+          <button
+            onClick={() => setActiveCategory(null)}
+            className={`px-3.5 py-1.5 text-xs font-medium rounded-full border transition-all duration-300 ${
+              !activeCategory
+                ? "text-white bg-white/[0.08] border-white/[0.15]"
+                : "text-gray-500 bg-transparent border-white/[0.06] hover:text-white hover:border-white/[0.12]"
+            }`}
+          >
+            All
+          </button>
+          {categories.map((cat) => (
+            <button
+              key={cat.name}
+              onClick={() => setActiveCategory(activeCategory === cat.name ? null : cat.name)}
+              className={`px-3.5 py-1.5 text-xs font-medium rounded-full border transition-all duration-300 ${
+                activeCategory === cat.name
+                  ? "text-white bg-white/[0.08] border-white/[0.15]"
+                  : "text-gray-500 bg-transparent border-white/[0.06] hover:text-white hover:border-white/[0.12]"
+              }`}
+            >
+              {cat.icon} {cat.name}
+            </button>
+          ))}
+        </div>
+
+        {/* Skill cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {skillCategories.map((cat, idx) => (
+          {displayed.map((cat, idx) => (
             <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 30 }}
+              key={cat.name}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: idx * 0.08, duration: 0.5 }}
-              whileHover={{ y: -6 }}
-              className={`group relative p-6 rounded-2xl glass ${cat.border} ${cat.glow} transition-all duration-500 cursor-default`}
+              transition={{ delay: idx * 0.06 }}
+              whileHover={{ y: -4 }}
+              className="group glass rounded-2xl p-6 hover:border-white/[0.1] transition-all duration-400 cursor-default"
             >
-              {/* Top accent */}
-              <div className={`absolute top-0 left-0 right-0 h-[2px] rounded-t-2xl bg-gradient-to-r ${cat.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-
-              {/* Header */}
-              <div className="flex items-center gap-3 mb-6">
-                <span className="text-2xl">{cat.icon}</span>
-                <h3 className="text-lg font-bold text-white">{cat.title}</h3>
+              <div className="flex items-center gap-2.5 mb-5">
+                <span className="text-xl">{cat.icon}</span>
+                <h3 className="text-base font-bold text-white">{cat.name}</h3>
               </div>
-
-              {/* Progress bars */}
-              <div className="space-y-3">
+              <div className="flex flex-wrap gap-2">
                 {cat.skills.map((skill, sIdx) => (
-                  <SkillBar
-                    key={sIdx}
-                    name={skill.name}
-                    level={skill.level}
-                    gradient={cat.gradient}
-                    delay={sIdx * 0.1}
-                  />
+                  <motion.div
+                    key={skill.name}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: sIdx * 0.05 }}
+                    className="tooltip-wrapper"
+                  >
+                    <span className="inline-block px-3 py-1.5 text-sm text-gray-300 bg-white/[0.03] border border-white/[0.06] rounded-xl hover:bg-cyan-500/5 hover:border-cyan-500/20 hover:text-white hover:shadow-[0_0_12px_rgba(6,182,212,0.1)] transition-all duration-300 cursor-default">
+                      {skill.name}
+                    </span>
+                    <span className="tooltip-text">{skill.tip}</span>
+                  </motion.div>
                 ))}
               </div>
             </motion.div>

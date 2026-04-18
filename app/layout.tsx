@@ -1,26 +1,29 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { DM_Sans } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-body",
+  weight: ["400", "500", "600", "700"],
+});
 
 export const metadata: Metadata = {
-  title: "Rakesh Bangra | Systems Builder & AI Engineer",
+  title: "Rakesh Bangra — Builder, Not Just a Student",
   description:
-    "Full Stack Developer, AI/ML Enthusiast, and Systems Thinker. Led 5+ hackathons, organized 15+ tech events, and built real-world solutions at UEM Jaipur. Explore projects, skills, and leadership impact.",
+    "B.Tech CSE · 9.48 CGPA · ACM Chapter Chairperson · Building full-stack apps and exploring AI/ML. Looking for internship and SDE roles.",
   keywords: [
     "Rakesh Bangra",
     "Full Stack Developer",
-    "AI ML Engineer",
+    "AI ML",
     "Portfolio",
     "UEM Jaipur",
-    "Hackathon Organizer",
     "ACM Chairperson",
   ],
   openGraph: {
-    title: "Rakesh Bangra | Systems Builder & AI Engineer",
+    title: "Rakesh Bangra — Builder, Not Just a Student",
     description:
-      "Engineering intelligent systems that solve real problems. Full Stack Developer • AI/ML Enthusiast • Systems Thinker.",
+      "I build things that actually work. Full-stack developer, AI/ML explorer, and tech community leader.",
     type: "website",
   },
 };
@@ -32,7 +35,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} antialiased`}>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className={`${dmSans.variable} antialiased`}>
         {children}
       </body>
     </html>
