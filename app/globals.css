@@ -80,7 +80,7 @@ img { -webkit-user-drag: none; }
 
 /* ─── FONTS ─── */
 .font-display {
-  font-family: 'Syne', system-ui, sans-serif;
+  font-family: var(--font-display), 'Syne', system-ui, sans-serif;
 }
 
 /* ─── KEYFRAMES ─── */
